@@ -2,7 +2,9 @@ import { Database } from "sqlite3";
 
 const sqlite3 = require("sqlite3").verbose();
 
-export const createDBRepository = (databaseFilename: string): Repository => {
+export const createDBRepository = (
+  databaseFilename: string
+): ShiftworkerRepository => {
   let db = new sqlite3.Database(databaseFilename, async (err: Error | null) => {
     if (err) {
       console.error(err.message);
@@ -44,7 +46,7 @@ export interface ShifttypeDB {
   description: string;
 }
 
-export interface Repository {
+export interface ShiftworkerRepository {
   getShifts: () => Promise<ShiftDB[]>;
   getShifttypes: () => Promise<ShifttypeDB[]>;
 }

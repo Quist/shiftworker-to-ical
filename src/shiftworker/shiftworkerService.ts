@@ -1,4 +1,4 @@
-import { Repository, ShiftDB, ShifttypeDB } from "./db/db";
+import { ShiftworkerRepository, ShiftDB, ShifttypeDB } from "./db/db";
 import { isAfterYesterday } from "../utils/dateUtil";
 import { Dayjs } from "dayjs";
 const dayjs = require("dayjs");
@@ -10,7 +10,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const shiftworkerService = (
-  repository: Repository
+  repository: ShiftworkerRepository
 ): { getShifts: () => Promise<Shift[]> } => {
   return {
     getShifts: async () => {
