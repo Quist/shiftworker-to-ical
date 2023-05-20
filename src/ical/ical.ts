@@ -1,29 +1,28 @@
 import { v4 as uuidv4 } from "uuid";
 const dayjs = require("dayjs");
-var customParseFormat = require('dayjs/plugin/customParseFormat')
-var utc = require('dayjs/plugin/utc')
-var timezone = require('dayjs/plugin/timezone') // dependent on utc plugin
-dayjs.extend(customParseFormat)
-dayjs.extend(utc)
-dayjs.extend(timezone)
+var customParseFormat = require("dayjs/plugin/customParseFormat");
+var utc = require("dayjs/plugin/utc");
+var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
+dayjs.extend(customParseFormat);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 import { Shift } from "../shiftworker/shiftworkerService";
 
-
 export const toIcal = (shifts: Shift[]) => {
-	const events = shifts.map(shift => convertToVEvent(shift))
-	return `BEGIN:VCALENDAR
+  const events = shifts.map((shift) => convertToVEvent(shift));
+  return `BEGIN:VCALENDAR
 PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 VERSION:2.0
 ${events.join("")}END:VCALENDAR`;
 };
 
 const convertToVEvent = (shift: Shift) => {
-	return `BEGIN:VEVENT
+  return `BEGIN:VEVENT
 DTSTAMP:${dayjs().format("YYYYMMDDTHHmmss")}Z
 DTSTART:${dayjs(shift.start).utc().format("YYYYMMDDTHHmmss")}Z
 DTEND:${dayjs(shift.end).utc().format("YYYYMMDDTHHmmss")}Z
 UID:${uuidv4()}@quister.org
 SUMMARY:${shift.summary}
 END:VEVENT
-`
-}
+`;
+};
