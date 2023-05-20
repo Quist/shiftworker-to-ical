@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "deploy": "npm run build && gcloud functions deploy shiftworkerHttp --runtime nodejs18 --trigger-http --allow-unauthenticated",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.2.0"
+  }
+}
