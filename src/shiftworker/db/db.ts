@@ -18,6 +18,13 @@ export class ShiftworkerDbRepository implements ShiftworkerRepository {
       this.db.all("SELECT * FROM shifts", (err: string, rows: ShiftDB[]) => {
         res(rows);
       });
+    }).then((res: unknown) => {
+      if (!res) {
+        throw new Error(
+          "Expected input file to have database rows, but instead it was undefined."
+        );
+      }
+      return res as ShiftDB[];
     });
   }
 
