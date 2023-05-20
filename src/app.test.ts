@@ -101,6 +101,13 @@ describe("Følger ICAL spesifikasjon", () => {
         const summary = event?.match("SUMMARY:(.+)")?.[1];
         expect(summary).toBeDefined();
       });
+
+      test("legger til prefix hvis definert", () => {
+        const input = getDefaultInput();
+        const result = toIcal([...input], { prefix: "Ingrid: " });
+        const summary = result?.match("SUMMARY:(.+)")?.[1];
+        expect(summary).toEqual(`Ingrid: ${input[0].summary}`);
+      });
     });
   });
 });

@@ -8,21 +8,29 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 import { Shift } from "../shiftworker/shiftworkerService";
 
-export const toIcal = (shifts: Shift[]) => {
-  const events = shifts.map((shift) => convertToVEvent(shift));
+export const toIcal = (shifts: Shift[], config?: ToIcalConfig) => {
+  const events = shifts.map((shift) => convertToVEvent(shift, config));
   return `BEGIN:VCALENDAR
 PRODID:-//hacksw/handcal//NONSGML v1.0//EN
 VERSION:2.0
 ${events.join("")}END:VCALENDAR`;
 };
 
-const convertToVEvent = (shift: Shift) => {
+const convertToVEvent = (shift: Shift, config?: ToIcalConfig) => {
+  const summary = config?.prefix
+    ? `${config.prefix}${shift.summary}`
+    : shift.summary;
+
   return `BEGIN:VEVENT
 DTSTAMP:${dayjs().format("YYYYMMDDTHHmmss")}Z
 DTSTART:${dayjs(shift.start).utc().format("YYYYMMDDTHHmmss")}Z
 DTEND:${dayjs(shift.end).utc().format("YYYYMMDDTHHmmss")}Z
 UID:${uuidv4()}@quister.org
-SUMMARY:${shift.summary}
+SUMMARY:${summary}
 END:VEVENT
 `;
 };
+
+interface ToIcalConfig {
+  prefix?: string;
+}
