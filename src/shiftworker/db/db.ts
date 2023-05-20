@@ -2,36 +2,36 @@ import { Database } from "sqlite3";
 
 const sqlite3 = require("sqlite3").verbose();
 
-export const createDBRepository = (
-  databaseFilename: string
-): ShiftworkerRepository => {
-  let db = new sqlite3.Database(databaseFilename, async (err: Error | null) => {
-    if (err) {
-      console.error(err.message);
-    }
-  });
+export class ShiftworkerDbRepository implements ShiftworkerRepository {
+  private db: Database;
 
-  return {
-    getShifts: () => readShifts(db),
-    getShifttypes: () => readShifttypes(db),
-  };
-};
-
-const readShifts = (db: Database): Promise<ShiftDB[]> => {
-  return new Promise((res, reject) => {
-    db.all("SELECT * FROM shifts", (err: string, rows: ShiftDB[]) => {
-      res(rows);
+  constructor(inputFilename: string) {
+    this.db = new sqlite3.Database(inputFilename, async (err: Error | null) => {
+      if (err) {
+        console.error(err.message);
+      }
     });
-  });
-};
+  }
 
-const readShifttypes = (db: Database): Promise<ShifttypeDB[]> => {
-  return new Promise((res, reject) => {
-    db.all("SELECT * FROM shifttype", (err: string, rows: ShifttypeDB[]) => {
-      res(rows);
+  getShifts(): Promise<ShiftDB[]> {
+    return new Promise((res, reject) => {
+      this.db.all("SELECT * FROM shifts", (err: string, rows: ShiftDB[]) => {
+        res(rows);
+      });
     });
-  });
-};
+  }
+
+  getShifttypes(): Promise<ShifttypeDB[]> {
+    return new Promise((res, reject) => {
+      this.db.all(
+        "SELECT * FROM shifttype",
+        (err: string, rows: ShifttypeDB[]) => {
+          res(rows);
+        }
+      );
+    });
+  }
+}
 
 export interface ShiftDB {
   id: string;
