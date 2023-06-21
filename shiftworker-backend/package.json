@@ -5,9 +5,11 @@
   },
   "devDependencies": {
     "@types/node": "^20.2.1",
+    "@types/uuid": "^9.0.1",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@google-cloud/functions-framework": "^3.2.0"
+    "@google-cloud/functions-framework": "^3.2.0",
+    "shiftworker-to-ical": "^1.0.12"
   }
 }
