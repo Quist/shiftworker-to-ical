@@ -3,7 +3,7 @@ import * as fs from "fs";
 export class ArgumentParser {
   static parseArguments(): ParsedArguments {
     if (process.argv.length <= 2) {
-      throw new Error("Usage: input output");
+      throw new Error("Missing required parameter: inputFilePath.");
     }
     console.log(process.argv);
     const inputFilePath = process.argv[2];

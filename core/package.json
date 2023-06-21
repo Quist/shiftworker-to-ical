@@ -1,10 +1,12 @@
 {
   "name": "shiftworker-to-ical",
-  "version": "1.0.0",
+  "version": "1.0.12",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "prepack": "npm run build"
   },
   "author": "",
   "license": "ISC",

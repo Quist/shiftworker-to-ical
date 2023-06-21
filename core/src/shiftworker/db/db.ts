@@ -2,26 +2,45 @@ import { Database } from "sqlite3";
 
 const sqlite3 = require("sqlite3").verbose();
 
-export class ShiftworkerDbRepository implements ShiftworkerRepository {
+export const createShiftworkerDbRepository = (
+  inputFilename: string
+): Promise<ShiftworkerDbRepository> => {
+  return new Promise((res, reject) => {
+    const db = new sqlite3.Database(
+      inputFilename,
+      async (err: Error | null) => {
+        if (err) {
+          reject(`Error initializing ShiftworkerDbRepository: ${err}`);
+        } else {
+          console.log(
+            `ShiftworkerDbRepository successfully initialized with file ${inputFilename}`
+          );
+          res(new ShiftworkerDbRepository(db));
+        }
+      }
+    );
+  });
+};
+
+class ShiftworkerDbRepository implements ShiftworkerRepository {
   private db: Database;
 
-  constructor(inputFilename: string) {
-    this.db = new sqlite3.Database(inputFilename, async (err: Error | null) => {
-      if (err) {
-        console.error(err.message);
-      }
-    });
+  constructor(db: Database) {
+    this.db = db;
   }
 
   getShifts(): Promise<ShiftDB[]> {
     return new Promise((res, reject) => {
       this.db.all("SELECT * FROM shifts", (err: string, rows: ShiftDB[]) => {
+        if (err) {
+          reject(`Error reading shifts from shifts table: ${err}`);
+        }
         res(rows);
       });
     }).then((res: unknown) => {
       if (!res) {
         throw new Error(
-          "Expected input file to have database rows, but instead it was undefined."
+          "Expected input file to have database rows, but instead it was undefined. TEST"
         );
       }
       return res as ShiftDB[];
