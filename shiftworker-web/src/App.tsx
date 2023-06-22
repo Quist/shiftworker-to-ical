@@ -22,7 +22,7 @@ function App() {
               console.log(text);
               postToBackend(text as string);
             };
-            reader.readAsText(e.target.files[0]);
+            reader.readAsArrayBuffer(e.target.files[0]);
           }}
         ></input>
       </header>
@@ -33,7 +33,11 @@ function App() {
 const postToBackend = async (payload: string) => {
   await fetch(
     "https://us-central1-shiftworker-387320.cloudfunctions.net/shiftworkerHttp",
-    { method: "post", body: payload }
+    {
+      method: "post",
+      body: payload,
+      headers: { "Content-Type": "application/octet-stream" },
+    }
   );
 };
 
