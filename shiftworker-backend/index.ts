@@ -1,8 +1,6 @@
 import { Request, Response } from "@google-cloud/functions-framework";
-import * as fs from "fs";
-import * as crypto from "crypto";
-
-import { toICal } from "shiftworker-to-ical";
+import { ShiftworkerToIcalService } from "./src/shiftworkerToIcalService";
+import { GCloudFileService } from "./src/fileService";
 
 const functions = require("@google-cloud/functions-framework");
 
@@ -29,7 +27,7 @@ functions.http("shiftworkerHttp", (req: Request, res: Response) => {
       })
       .catch((e) => {
         console.error(e);
-        res.send("Error");
+        res.status(500).send("Error");
       });
   } else {
     res.send("Hello World!");
@@ -37,22 +35,6 @@ functions.http("shiftworkerHttp", (req: Request, res: Response) => {
 });
 
 async function handlePost(req: Request): Promise<string> {
-  const filepath = await writeToFile(req.body);
-  return await toICal(filepath);
-}
-
-function writeToFile(payload: any): Promise<string> {
-  const id = crypto.randomBytes(16).toString("hex");
-  return new Promise((resolve, reject) => {
-    const filePath = `/tmp/${id}.txt`;
-    fs.writeFile(filePath, payload, (err) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        fs.readFileSync(filePath);
-        resolve(filePath);
-      }
-    });
-  });
+  const service = new ShiftworkerToIcalService(new GCloudFileService());
+  return await service.convert(req.body);
 }
