@@ -6,7 +6,7 @@ var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-import { Shift } from "../shiftworker/shiftworkerService";
+import { Shift } from "../shiftworker/shiftworkerExportService";
 
 export const toIcal = (shifts: Shift[], config?: ToIcalConfig): string => {
   const events = shifts.map((shift) => convertToVEvent(shift, config));

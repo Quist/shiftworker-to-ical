@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { toIcal } from "./ical";
-import { Shift } from "../shiftworker/shiftworkerService";
+import { Shift } from "../shiftworker/shiftworkerExportService";
 
 const getDefaultInput = (): Shift[] => {
   return [
