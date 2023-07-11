@@ -5,6 +5,7 @@ import {
   Button,
   Code,
   Container,
+  Fade,
   FormControl,
   Heading,
   Link,
@@ -48,33 +49,25 @@ export const App = () => {
 
 const AppBody = () => {
   const [appState, setAppState] = useState<
-    "file_upload" | { state: "successful_upload"; response: { url: string } }
-  >("file_upload");
-  if (appState === "file_upload") {
-    return (
-      <UploadFilePage
-        onSuccess={(response) =>
-          setAppState({ state: "successful_upload", response })
-        }
-      />
-    );
-  }
+    | { state: "file_upload" }
+    | { state: "successful_upload"; response: { url: string } }
+  >({ state: "file_upload" });
+
   return (
-    <Stack>
-      <Code>{appState.response.url}</Code>
-      <Text fontSize="sm">
-        Copy the URL to{" "}
-        <Link
-          color="teal.500"
-          isExternal={true}
-          href={
-            "https://calendar.google.com/calendar/u/0/r/settings/addbyurl?tab=mc"
+    <>
+      {appState.state === "file_upload" && (
+        <UploadFilePage
+          onSuccess={(response) =>
+            setAppState({ state: "successful_upload", response })
           }
-        >
-          Google Calendar
-        </Link>
-      </Text>
-    </Stack>
+        />
+      )}
+      <Fade in={appState.state === "successful_upload"}>
+        {appState.state === "successful_upload" && (
+          <FileSuccesfullyUploaded url={appState.response.url} />
+        )}
+      </Fade>
+    </>
   );
 };
 
@@ -123,6 +116,26 @@ const UploadFilePage = ({
           Learn more
         </Button>
       </>
+    </Stack>
+  );
+};
+
+const FileSuccesfullyUploaded = ({ url }: { url: string }) => {
+  return (
+    <Stack>
+      <Code>{url}</Code>
+      <Text fontSize="sm">
+        Copy the URL to{" "}
+        <Link
+          color="teal.500"
+          isExternal={true}
+          href={
+            "https://calendar.google.com/calendar/u/0/r/settings/addbyurl?tab=mc"
+          }
+        >
+          Google Calendar
+        </Link>
+      </Text>
     </Stack>
   );
 };
