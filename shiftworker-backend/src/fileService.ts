@@ -6,7 +6,7 @@ export class GCloudFileService implements FileService {
   async writeToStorage(icalAsString: string): Promise<string> {
     const storage = new Storage();
     const id = crypto.randomBytes(16).toString("hex");
-    const filePath = `${id}.txt`;
+    const filePath = `${id}.ical`;
     await storage
       .bucket("shiftworker-to-ical-generated-output")
       .file(filePath)
