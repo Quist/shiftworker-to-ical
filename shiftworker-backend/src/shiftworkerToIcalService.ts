@@ -1,4 +1,4 @@
-import { toICal } from "shiftworker-to-ical";
+import { exportShiftworkerFileToIcal } from "shiftworker-to-ical";
 import { FileService } from "./fileService";
 
 export class ShiftworkerToIcalService {
@@ -10,7 +10,7 @@ export class ShiftworkerToIcalService {
 
   public async convert(inputData: any): Promise<string> {
     const filepath = await this.fileService.writeToTmpFile(inputData);
-    const icalAsString = await toICal(filepath);
+    const icalAsString = await exportShiftworkerFileToIcal(filepath);
     const outfile = await this.fileService.writeToStorage(icalAsString);
     console.log(
       `✅ ShiftworkerToIcalService successfully completed and written output to '${outfile}'`

@@ -8,7 +8,10 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 import { Shift } from "../shiftworker/shiftworkerExportService";
 
-export const toIcal = (shifts: Shift[], config?: ToIcalConfig): string => {
+export const convertToIcal = (
+  shifts: Shift[],
+  config?: ToIcalConfig
+): string => {
   const events = shifts.map((shift) => convertToVEvent(shift, config));
   return `BEGIN:VCALENDAR
 PRODID:-//hacksw/handcal//NONSGML v1.0//EN

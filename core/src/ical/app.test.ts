@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { toIcal } from "./ical";
+import { convertToIcal } from "./ical";
 import { Shift } from "../shiftworker/shiftworkerExportService";
 
 const getDefaultInput = (): Shift[] => {
@@ -15,30 +15,30 @@ const getDefaultInput = (): Shift[] => {
 describe("Følger ICAL spesifikasjon", () => {
   describe("Overordnet", () => {
     test("starter med BEGIN", () => {
-      expect(toIcal(getDefaultInput())).toStartWith("BEGIN:VCALENDAR\n");
+      expect(convertToIcal(getDefaultInput())).toStartWith("BEGIN:VCALENDAR\n");
     });
 
     test("slutter med END", () => {
-      expect(toIcal(getDefaultInput())).toEndWith("\nEND:VCALENDAR");
+      expect(convertToIcal(getDefaultInput())).toEndWith("\nEND:VCALENDAR");
     });
 
     test("inkluderer PRODID", () => {
-      expect(toIcal(getDefaultInput())).toContain(
+      expect(convertToIcal(getDefaultInput())).toContain(
         "PRODID:-//hacksw/handcal//NONSGML v1.0//EN"
       );
     });
 
     test("inkluderer VERSION", () => {
-      expect(toIcal(getDefaultInput())).toContain("VERSION:2.0");
+      expect(convertToIcal(getDefaultInput())).toContain("VERSION:2.0");
     });
 
     test("inkluderer minst ett VEVENT", () => {
-      expect(toIcal(getDefaultInput())).toContain("BEGIN:VEVENT");
-      expect(toIcal(getDefaultInput())).toContain("END:VEVENT");
+      expect(convertToIcal(getDefaultInput())).toContain("BEGIN:VEVENT");
+      expect(convertToIcal(getDefaultInput())).toContain("END:VEVENT");
     });
 
     test("har ingen tomme linjer", () => {
-      const output = toIcal(getDefaultInput());
+      const output = convertToIcal(getDefaultInput());
       const emptyLines = output.match(/^[ \t]*$/gm)?.length || 0;
       expect(emptyLines).toBe(0);
     });
@@ -46,7 +46,7 @@ describe("Følger ICAL spesifikasjon", () => {
 
   describe("For VEvent", () => {
     const regex = new RegExp("BEGIN:VEVENT(.*?)END:VEVENT", "gs");
-    const result = toIcal(getDefaultInput());
+    const result = convertToIcal(getDefaultInput());
     const event = result.match(regex)![0];
 
     test("har påkrevde felter", () => {
@@ -69,7 +69,10 @@ describe("Følger ICAL spesifikasjon", () => {
       });
 
       test("Har unike identfikatorer", () => {
-        const result = toIcal([...getDefaultInput(), ...getDefaultInput()]);
+        const result = convertToIcal([
+          ...getDefaultInput(),
+          ...getDefaultInput(),
+        ]);
         const event = result.match(regex)?.[0];
         const event2 = result.match(regex)?.[1];
         const uid = event?.match("UID:(.+)")?.[1];
@@ -104,7 +107,7 @@ describe("Følger ICAL spesifikasjon", () => {
 
       test("legger til prefix hvis definert", () => {
         const input = getDefaultInput();
-        const result = toIcal([...input], { prefix: "Ingrid: " });
+        const result = convertToIcal([...input], { prefix: "Ingrid: " });
         const summary = result?.match("SUMMARY:(.+)")?.[1];
         expect(summary).toEqual(`Ingrid: ${input[0].summary}`);
       });

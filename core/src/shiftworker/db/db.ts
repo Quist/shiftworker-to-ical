@@ -2,7 +2,7 @@ import { Database } from "sqlite3";
 
 const sqlite3 = require("sqlite3").verbose();
 
-export const createShiftworkerDbRepository = (
+export const initializeShiftworkerDbRepository = (
   inputFilename: string
 ): Promise<ShiftworkerDbRepository> => {
   return new Promise((res, reject) => {

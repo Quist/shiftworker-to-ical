@@ -1,9 +1,11 @@
-import { toIcal as _toICal } from "./src/ical/ical";
-import { createShiftworkerDbRepository } from "./src/shiftworker/db/db";
+import { convertToIcal } from "./src/ical/ical";
+import { initializeShiftworkerDbRepository } from "./src/shiftworker/db/db";
 import { ShiftworkerExportService } from "./src/shiftworker/shiftworkerExportService";
 
-export const toICal = async (filepath: string): Promise<string> => {
-  const repository = await createShiftworkerDbRepository(filepath);
+export const exportShiftworkerFileToIcal = async (
+  filepath: string
+): Promise<string> => {
+  const repository = await initializeShiftworkerDbRepository(filepath);
   const service = new ShiftworkerExportService(repository);
-  return service.exportShifts().then((shifts) => _toICal(shifts));
+  return service.exportShifts().then((shifts) => convertToIcal(shifts));
 };
