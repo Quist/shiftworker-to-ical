@@ -57,7 +57,6 @@ describe("Følger ICAL spesifikasjon", () => {
     describe("dtstamp", () => {
       test("har en valid dato", () => {
         const dtstamp = event?.match("DTSTAMP:(.+)")?.[1];
-        // return [{start: dayjs("2018-04-13 19:18"), end: dayjs(), summary: 'test'}]
         expect(dtstamp).toBeDefined();
       });
     });
@@ -114,23 +113,3 @@ describe("Følger ICAL spesifikasjon", () => {
     });
   });
 });
-
-/**
- *
-       BEGIN:VCALENDAR
-       VERSION:2.0
-       PRODID:-//hacksw/handcal//NONSGML v1.0//EN
-       BEGIN:VEVENT
-       UID:19970610T172345Z-AF23B2@example.com
-       DTSTAMP:19970610T172345Z
-       DTSTART:19970714T170000Z
-       DTEND:19970715T040000Z
-       SUMMARY:Bastille Day Party
-       END:VEVENT
-       END:VCALENDAR
- */
-
-/**
- * Spec notes
- * It must include at least one calendar component
- * */
