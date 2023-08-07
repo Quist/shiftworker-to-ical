@@ -19,7 +19,7 @@ VERSION:2.0
 ${events.join("")}END:VCALENDAR`;
 };
 
-const convertToVEvent = (shift: Shift, config?: ToIcalConfig) => {
+export const convertToVEvent = (shift: Shift, config?: ToIcalConfig) => {
   const summary = config?.prefix
     ? `${config.prefix}${shift.summary}`
     : shift.summary;
