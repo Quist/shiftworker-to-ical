@@ -1,4 +1,4 @@
-import { convertToIcal } from "./src/ical/ical";
+import { convertToIcal } from "./src/ical/icalWriter";
 import { initializeShiftworkerDbRepository } from "./src/shiftworker/db/db";
 import { ShiftworkerExportService } from "./src/shiftworker/shiftworkerExportService";
 
