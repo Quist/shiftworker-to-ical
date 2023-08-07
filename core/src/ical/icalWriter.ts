@@ -26,8 +26,8 @@ export const convertToVEvent = (shift: Shift, config?: ToIcalConfig) => {
 
   return `BEGIN:VEVENT
 DTSTAMP:${dayjs().format("YYYYMMDDTHHmmss")}Z
-DTSTART:${dayjs(shift.start).utc().format("YYYYMMDDTHHmmss")}Z
-DTEND:${dayjs(shift.end).utc().format("YYYYMMDDTHHmmss")}Z
+DTSTART;TZID=Europe/Oslo:${shift.start.format("YYYYMMDDTHHmmss")}
+DTEND;TZID=Europe/Oslo:${shift.end.format("YYYYMMDDTHHmmss")}
 UID:${uuidv4()}@quister.org
 SUMMARY:${summary}
 END:VEVENT

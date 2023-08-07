@@ -119,8 +119,8 @@ describe("Følger ICAL spesifikasjon", () => {
   });
 });
 
-describe("Konverterer datoer", () => {
-  test("For datoer med tidssone i EUROPE/BERLIN", () => {
+describe("Konverterer tidspunkter", () => {
+  test("For tidspunkter med tidssone i EUROPE/BERLIN", () => {
     const shift = {
       start: dayjs.tz("2018-04-13 07:00", "EUROPE/BERLIN"),
       end: dayjs.tz("2018-04-13 15:30", "EUROPE/BERLIN"),
@@ -129,10 +129,10 @@ describe("Konverterer datoer", () => {
     const result = convertToVEvent(shift);
     const dtstart = extractField(result, "DTSTART");
 
-    expect(dtstart).toEqual("20180413T050000Z");
+    expect(dtstart).toEqual("TZID=Europe/Oslo:20180413T070000");
   });
 
-  test("For datoer i utc", () => {
+  test("For tidspunkter i utc", () => {
     const shift = {
       start: dayjs.utc("2018-04-13 07:00"),
       end: dayjs.utc("2018-04-13 15:30"),
@@ -141,11 +141,11 @@ describe("Konverterer datoer", () => {
     const result = convertToVEvent(shift);
     const dtstart = extractField(result, "DTSTART");
 
-    expect(dtstart).toEqual("20180413T070000Z");
+    expect(dtstart).toEqual("TZID=Europe/Oslo:20180413T070000");
   });
 });
 
 function extractField(result: string, field: "DTSTART" | "DTEND") {
   const event = result.match(VEVENT_REGEX)![0];
-  return event?.match(`${field}:(.+)`)?.[1];
+  return event?.match(`${field}(?::|;)(.+)`)?.[1];
 }
