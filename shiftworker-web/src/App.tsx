@@ -10,10 +10,12 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { UploadFilePage } from "./UploadFilePage";
+import { NavBar } from "./Navbar";
 
 export const App = () => {
   return (
     <>
+      <NavBar />
       <Container maxW={"3xl"}>
         <Stack
           as={Box}
