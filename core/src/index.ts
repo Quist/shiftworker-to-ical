@@ -1,6 +1,6 @@
-import { convertToIcal } from "./src/ical/icalWriter";
-import { initializeShiftworkerDbRepository } from "./src/shiftworker/db/db";
-import { ShiftworkerExportService } from "./src/shiftworker/shiftworkerExportService";
+import { convertToIcal } from "./ical/icalWriter";
+import { initializeShiftworkerDbRepository } from "./shiftworker/db/db";
+import { ShiftworkerExportService } from "./shiftworker/shiftworkerExportService";
 
 export const exportShiftworkerFileToIcal = async (
   filepath: string
