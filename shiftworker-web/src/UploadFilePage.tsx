@@ -1,9 +1,16 @@
 import React, { useRef, useState } from "react";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Alert,
   AlertIcon,
+  Box,
   Button,
   FormControl,
+  Heading,
   Stack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -39,13 +46,7 @@ export const UploadFilePage = ({
   return (
     <>
       <LearnMoreModal isOpen={isOpen} onClose={onClose} />
-      <Stack
-        direction={"column"}
-        spacing={3}
-        align={"center"}
-        alignSelf={"center"}
-        position={"relative"}
-      >
+      <Stack direction={"column"} spacing={3} position={"relative"}>
         <>
           <FileInput onChange={onFileSelected} isLoading={isLoading} />
           {error && (
@@ -54,6 +55,27 @@ export const UploadFilePage = ({
               There was an error processing your request
             </Alert>
           )}
+          <Accordion
+            maxW={"md"}
+            marginTop={4}
+            marginBottom={4}
+            alignSelf={"center"}
+            allowToggle
+          >
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Box as="span" flex="1" textAlign="center" fontSize={"sm"}>
+                    Advanced
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <Advanced isOpen={true} />
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
           <Button
             variant={"link"}
             colorScheme={"blue"}
@@ -91,6 +113,8 @@ const FileInput = (props: {
       <Button
         onClick={() => inputRef.current.click()}
         isLoading={props.isLoading}
+        variant={"solid"}
+        colorScheme="teal"
       >
         Upload Shiftworker File
       </Button>
@@ -111,4 +135,16 @@ const postToBackend = async (payload: string): Promise<string> => {
     throw Error(`Backend returned error code: ${response.status}`);
   }
   return await response.text();
+};
+
+const Advanced = ({ isOpen }: { isOpen: boolean }) => {
+  if (!isOpen) {
+    return null;
+  }
+  return (
+    <>
+      <Heading size={"xs"}>Timezone</Heading>
+      <p>{Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+    </>
+  );
 };
