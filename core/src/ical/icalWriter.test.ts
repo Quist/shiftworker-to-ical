@@ -1,14 +1,25 @@
 import dayjs from "dayjs";
-import { convertToIcal, convertToVEvent, ToIcalConfig } from "./icalWriter";
+import {
+  convertToIcal,
+  convertToVEvent,
+  ToIcalConfig,
+  ValidTimeZone,
+} from "./icalWriter";
 
 import { Shift } from "../shiftworker/shiftworkerExportService";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { orElseThrow } from "../utils/result";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const VEVENT_REGEX = new RegExp("BEGIN:VEVENT(.*?)END:VEVENT", "gs");
 const IcalDatetimeFormat = "YYYYMMDDTHHmmss[Z]";
+const OSLO_TIMEZONE = orElseThrow(ValidTimeZone.create("Europe/Oslo")).value;
+const NEW_YORK_TIMEZONE = orElseThrow(
+  ValidTimeZone.create("America/New_York")
+).value;
+
 const getDefaultInput = (): Shift[] => {
   return [
     {
@@ -20,7 +31,7 @@ const getDefaultInput = (): Shift[] => {
 };
 
 const defaultConfig = (): ToIcalConfig => {
-  return { timezone: "Europe/Oslo" };
+  return { timezone: OSLO_TIMEZONE };
 };
 
 describe("Følger ICAL spesifikasjon", () => {
@@ -156,7 +167,7 @@ describe("Konverterer tidspunkter", () => {
     };
     const result = convertToVEvent(shift, {
       ...defaultConfig(),
-      timezone: "America/New_York",
+      timezone: NEW_YORK_TIMEZONE,
     });
     const dtstart = extractField(result, "DTSTART");
 

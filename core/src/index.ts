@@ -1,6 +1,7 @@
-import { convertToIcal } from "./ical/icalWriter";
+import { convertToIcal, ToIcalConfig, ValidTimeZone } from "./ical/icalWriter";
 import { initializeShiftworkerDbRepository } from "./shiftworker/db/db";
 import { ShiftworkerExportService } from "./shiftworker/shiftworkerExportService";
+import { failure, Result, success } from "./utils/result";
 
 /**
  * Main exported function of the module.
@@ -14,9 +15,23 @@ export const exportShiftworkerFileToIcal = async (
 ): Promise<string> => {
   const repository = await initializeShiftworkerDbRepository(filepath);
   const service = new ShiftworkerExportService(repository);
-  return service
-    .exportShifts()
-    .then((shifts) => convertToIcal(shifts, { timezone: options.timezone }));
+  return service.exportShifts().then((shifts) => {
+    const configValidationResult = mapToValidConfig(options);
+    if (configValidationResult.ok) {
+      return convertToIcal(shifts, configValidationResult.value);
+    }
+    throw Error(configValidationResult.error);
+  });
+};
+
+const mapToValidConfig = (
+  config: ExportShiftworkerFileToIcalOptions
+): Result<ToIcalConfig, string> => {
+  const result = ValidTimeZone.create(config.timezone);
+  if (result.ok) {
+    return success({ timezone: result.value });
+  }
+  return failure(result.error);
 };
 
 interface ExportShiftworkerFileToIcalOptions {

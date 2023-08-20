@@ -7,6 +7,8 @@ dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 import { Shift } from "../shiftworker/shiftworkerExportService";
+import { failure, Result, success } from "../utils/result";
+import { isValidTimeZone } from "../utils/dateUtil";
 
 export const convertToIcal = (
   shifts: Shift[],
@@ -36,5 +38,23 @@ END:VEVENT
 
 export interface ToIcalConfig {
   prefix?: string;
-  timezone: string;
+  timezone: ValidTimeZone;
+}
+
+export class ValidTimeZone {
+  private readonly timezone: string;
+  private constructor(timezone: string) {
+    this.timezone = timezone;
+  }
+
+  public toString = (): string => {
+    return this.timezone;
+  };
+
+  static create = (timezone: string): Result<ValidTimeZone, string> => {
+    if (isValidTimeZone(timezone)) {
+      return success(new ValidTimeZone(timezone));
+    }
+    return failure(`Invalid timezone: ${timezone}`);
+  };
 }
