@@ -1,8 +1,9 @@
 {
   "name": "shiftworker-to-ical",
-  "version": "1.0.15",
+  "version": "1.0.17",
   "description": "",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc",
