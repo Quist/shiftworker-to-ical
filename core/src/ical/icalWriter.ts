@@ -10,7 +10,7 @@ import { Shift } from "../shiftworker/shiftworkerExportService";
 
 export const convertToIcal = (
   shifts: Shift[],
-  config?: ToIcalConfig
+  config: ToIcalConfig
 ): string => {
   const events = shifts.map((shift) => convertToVEvent(shift, config));
   return `BEGIN:VCALENDAR
@@ -19,21 +19,22 @@ VERSION:2.0
 ${events.join("")}END:VCALENDAR`;
 };
 
-export const convertToVEvent = (shift: Shift, config?: ToIcalConfig) => {
+export const convertToVEvent = (shift: Shift, config: ToIcalConfig) => {
   const summary = config?.prefix
     ? `${config.prefix}${shift.summary}`
     : shift.summary;
 
   return `BEGIN:VEVENT
 DTSTAMP:${dayjs().format("YYYYMMDDTHHmmss")}Z
-DTSTART;TZID=Europe/Oslo:${shift.start.format("YYYYMMDDTHHmmss")}
-DTEND;TZID=Europe/Oslo:${shift.end.format("YYYYMMDDTHHmmss")}
+DTSTART;TZID=${config.timezone}:${shift.start.format("YYYYMMDDTHHmmss")}
+DTEND;TZID=${config.timezone}:${shift.end.format("YYYYMMDDTHHmmss")}
 UID:${uuidv4()}@quister.org
 SUMMARY:${summary}
 END:VEVENT
 `;
 };
 
-interface ToIcalConfig {
+export interface ToIcalConfig {
   prefix?: string;
+  timezone: string;
 }

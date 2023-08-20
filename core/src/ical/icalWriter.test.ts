@@ -1,12 +1,14 @@
 import dayjs from "dayjs";
-import { convertToIcal, convertToVEvent } from "./icalWriter";
+import { convertToIcal, convertToVEvent, ToIcalConfig } from "./icalWriter";
 
 import { Shift } from "../shiftworker/shiftworkerExportService";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+const VEVENT_REGEX = new RegExp("BEGIN:VEVENT(.*?)END:VEVENT", "gs");
+const IcalDatetimeFormat = "YYYYMMDDTHHmmss[Z]";
 const getDefaultInput = (): Shift[] => {
   return [
     {
@@ -17,43 +19,54 @@ const getDefaultInput = (): Shift[] => {
   ];
 };
 
-const VEVENT_REGEX = new RegExp("BEGIN:VEVENT(.*?)END:VEVENT", "gs");
-const IcalDatetimeFormat = "YYYYMMDDTHHmmss[Z]";
+const defaultConfig = (): ToIcalConfig => {
+  return { timezone: "Europe/Oslo" };
+};
 
 describe("Følger ICAL spesifikasjon", () => {
   describe("Overordnet", () => {
     test("starter med BEGIN", () => {
-      expect(convertToIcal(getDefaultInput())).toStartWith("BEGIN:VCALENDAR\n");
+      expect(convertToIcal(getDefaultInput(), defaultConfig())).toStartWith(
+        "BEGIN:VCALENDAR\n"
+      );
     });
 
     test("slutter med END", () => {
-      expect(convertToIcal(getDefaultInput())).toEndWith("\nEND:VCALENDAR");
+      expect(convertToIcal(getDefaultInput(), defaultConfig())).toEndWith(
+        "\nEND:VCALENDAR"
+      );
     });
 
     test("inkluderer PRODID", () => {
-      expect(convertToIcal(getDefaultInput())).toContain(
+      expect(convertToIcal(getDefaultInput(), defaultConfig())).toContain(
         "PRODID:-//hacksw/handcal//NONSGML v1.0//EN"
       );
     });
 
     test("inkluderer VERSION", () => {
-      expect(convertToIcal(getDefaultInput())).toContain("VERSION:2.0");
+      expect(convertToIcal(getDefaultInput(), defaultConfig())).toContain(
+        "VERSION:2.0"
+      );
     });
 
     test("inkluderer minst ett VEVENT", () => {
-      expect(convertToIcal(getDefaultInput())).toContain("BEGIN:VEVENT");
-      expect(convertToIcal(getDefaultInput())).toContain("END:VEVENT");
+      expect(convertToIcal(getDefaultInput(), defaultConfig())).toContain(
+        "BEGIN:VEVENT"
+      );
+      expect(convertToIcal(getDefaultInput(), defaultConfig())).toContain(
+        "END:VEVENT"
+      );
     });
 
     test("har ingen tomme linjer", () => {
-      const output = convertToIcal(getDefaultInput());
+      const output = convertToIcal(getDefaultInput(), defaultConfig());
       const emptyLines = output.match(/^[ \t]*$/gm)?.length || 0;
       expect(emptyLines).toBe(0);
     });
   });
 
   describe("For VEvent", () => {
-    const result = convertToIcal(getDefaultInput());
+    const result = convertToIcal(getDefaultInput(), defaultConfig());
     const event = result.match(VEVENT_REGEX)![0];
 
     test("har påkrevde felter", () => {
@@ -75,10 +88,10 @@ describe("Følger ICAL spesifikasjon", () => {
       });
 
       test("Har unike identfikatorer", () => {
-        const result = convertToIcal([
-          ...getDefaultInput(),
-          ...getDefaultInput(),
-        ]);
+        const result = convertToIcal(
+          [...getDefaultInput(), ...getDefaultInput()],
+          defaultConfig()
+        );
         const event = result.match(VEVENT_REGEX)?.[0];
         const event2 = result.match(VEVENT_REGEX)?.[1];
         const uid = event?.match("UID:(.+)")?.[1];
@@ -89,7 +102,7 @@ describe("Følger ICAL spesifikasjon", () => {
 
     describe("dstart", () => {
       test("har en valid dato", () => {
-        const result = convertToIcal(getDefaultInput());
+        const result = convertToIcal(getDefaultInput(), defaultConfig());
         const dtstart = extractField(result, "DTSTART");
         expect(dayjs(dtstart, IcalDatetimeFormat).isValid());
       });
@@ -97,7 +110,7 @@ describe("Følger ICAL spesifikasjon", () => {
 
     describe("dtend", () => {
       test("har en valid dato", () => {
-        const result = convertToIcal(getDefaultInput());
+        const result = convertToIcal(getDefaultInput(), defaultConfig());
         const dtend = extractField(result, "DTEND");
         expect(dayjs(dtend, IcalDatetimeFormat).isValid());
       });
@@ -111,7 +124,10 @@ describe("Følger ICAL spesifikasjon", () => {
 
       test("legger til prefix hvis definert", () => {
         const input = getDefaultInput();
-        const result = convertToIcal([...input], { prefix: "Ingrid: " });
+        const result = convertToIcal([...input], {
+          ...defaultConfig(),
+          prefix: "Ingrid: ",
+        });
         const summary = result?.match("SUMMARY:(.+)")?.[1];
         expect(summary).toEqual(`Ingrid: ${input[0].summary}`);
       });
@@ -126,26 +142,29 @@ describe("Konverterer tidspunkter", () => {
       end: dayjs.tz("2018-04-13 15:30", "EUROPE/BERLIN"),
       summary: "Day Shift",
     };
-    const result = convertToVEvent(shift);
+    const result = convertToVEvent(shift, defaultConfig());
     const dtstart = extractField(result, "DTSTART");
 
     expect(dtstart).toEqual("TZID=Europe/Oslo:20180413T070000");
   });
 
-  test("For tidspunkter i utc", () => {
+  test("For tidspunkter i New York", () => {
     const shift = {
       start: dayjs.utc("2018-04-13 07:00"),
       end: dayjs.utc("2018-04-13 15:30"),
       summary: "Day Shift",
     };
-    const result = convertToVEvent(shift);
+    const result = convertToVEvent(shift, {
+      ...defaultConfig(),
+      timezone: "America/New_York",
+    });
     const dtstart = extractField(result, "DTSTART");
 
-    expect(dtstart).toEqual("TZID=Europe/Oslo:20180413T070000");
+    expect(dtstart).toEqual("TZID=America/New_York:20180413T070000");
   });
 });
 
-function extractField(result: string, field: "DTSTART" | "DTEND") {
+const extractField = (result: string, field: "DTSTART" | "DTEND") => {
   const event = result.match(VEVENT_REGEX)![0];
   return event?.match(`${field}(?::|;)(.+)`)?.[1];
-}
+};
