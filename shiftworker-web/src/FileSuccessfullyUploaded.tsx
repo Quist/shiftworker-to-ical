@@ -2,14 +2,11 @@ import React from "react";
 import {
   Button,
   Code,
-  HStack,
   Link,
   Stack,
   Text,
   useClipboard,
   useToast,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
 
 export const FileSuccessfullyUploaded = ({ url }: { url: string }) => {
