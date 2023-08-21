@@ -9,8 +9,14 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-export const FileSuccessfullyUploaded = ({ url }: { url: string }) => {
-  const { onCopy, value, setValue, hasCopied } = useClipboard(url);
+export const FileSuccessfullyUploaded = ({
+  url,
+  onReset,
+}: {
+  url: string;
+  onReset: () => void;
+}) => {
+  const { onCopy } = useClipboard(url);
   const toast = useToast();
 
   return (
@@ -43,6 +49,9 @@ export const FileSuccessfullyUploaded = ({ url }: { url: string }) => {
           Google Calendar
         </Link>
       </Text>
+      <Button marginTop={12} onClick={onReset}>
+        Upload another
+      </Button>
     </Stack>
   );
 };

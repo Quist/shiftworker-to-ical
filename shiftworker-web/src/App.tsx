@@ -1,13 +1,4 @@
-import {
-  Box,
-  Code,
-  Container,
-  Fade,
-  Heading,
-  Link,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Container, Fade, Heading, Stack, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { UploadFilePage } from "./UploadFilePage";
 import { NavBar } from "./Navbar";
@@ -64,7 +55,10 @@ const AppBody = () => {
       )}
       <Fade in={appState.state === "successful_upload"}>
         {appState.state === "successful_upload" && (
-          <FileSuccessfullyUploaded url={appState.response.url} />
+          <FileSuccessfullyUploaded
+            url={appState.response.url}
+            onReset={() => setAppState({ state: "file_upload" })}
+          />
         )}
       </Fade>
     </>
