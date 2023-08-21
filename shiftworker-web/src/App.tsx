@@ -11,6 +11,7 @@ import {
 import React, { useState } from "react";
 import { UploadFilePage } from "./UploadFilePage";
 import { NavBar } from "./Navbar";
+import { FileSuccessfullyUploaded } from "./FileSuccessfullyUploaded";
 
 export const App = () => {
   return (
@@ -63,29 +64,9 @@ const AppBody = () => {
       )}
       <Fade in={appState.state === "successful_upload"}>
         {appState.state === "successful_upload" && (
-          <FileSuccesfullyUploaded url={appState.response.url} />
+          <FileSuccessfullyUploaded url={appState.response.url} />
         )}
       </Fade>
     </>
-  );
-};
-
-const FileSuccesfullyUploaded = ({ url }: { url: string }) => {
-  return (
-    <Stack>
-      <Code>{url}</Code>
-      <Text fontSize="sm">
-        Copy the URL to{" "}
-        <Link
-          color="teal.500"
-          isExternal={true}
-          href={
-            "https://calendar.google.com/calendar/u/0/r/settings/addbyurl?tab=mc"
-          }
-        >
-          Google Calendar
-        </Link>
-      </Text>
-    </Stack>
   );
 };
