@@ -8,9 +8,14 @@ export class ShiftworkerToIcalService {
     this.fileService = fileService;
   }
 
-  public async convert(inputData: any): Promise<string> {
+  public async convert(
+    inputData: any,
+    options: { timezone: string }
+  ): Promise<string> {
     const filepath = await this.fileService.writeToTmpFile(inputData);
-    const icalAsString = await exportShiftworkerFileToIcal(filepath);
+    const icalAsString = await exportShiftworkerFileToIcal(filepath, {
+      timezone: options.timezone,
+    });
     const outfile = await this.fileService.writeToStorage(icalAsString);
     console.log(
       `✅ ShiftworkerToIcalService successfully completed and written output to '${outfile}'`
