@@ -15,6 +15,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { LearnMoreModal } from "./LearnMoreModal";
+import { postToBackend } from "./api";
 
 export const UploadFilePage = ({
   onSuccess,
@@ -120,21 +121,6 @@ const FileInput = (props: {
       </Button>
     </FormControl>
   );
-};
-
-const postToBackend = async (payload: string): Promise<string> => {
-  const response = await fetch(
-    "https://us-central1-shiftworker-387320.cloudfunctions.net/shiftworkerHttp",
-    {
-      method: "post",
-      body: payload,
-      headers: { "Content-Type": "application/octet-stream" },
-    }
-  );
-  if (!response.ok) {
-    throw Error(`Backend returned error code: ${response.status}`);
-  }
-  return await response.text();
 };
 
 const Advanced = ({ isOpen }: { isOpen: boolean }) => {
