@@ -19,12 +19,15 @@ export class ShiftworkerExportService {
   async exportShifts(): Promise<Shift[]> {
     const shifts = await this.repository.getShifts();
     const shifttypes = await this.repository.getShifttypes();
-    if (this.config.debug) {
-      this.printShifttypes(shifttypes);
-    }
-    return this.mapShifts(shifts, shifttypes).filter((shift) =>
+    const mappedShifts = this.mapShifts(shifts, shifttypes).filter((shift) =>
       isAfterYesterday(shift.start.toDate())
     );
+
+    if (this.config.debug) {
+      this.printShifttypes(shifttypes);
+      this.printShifts(mappedShifts);
+    }
+    return mappedShifts;
   }
 
   private mapShifts(shifts: ShiftDB[], shifttypes: ShifttypeDB[]): Shift[] {
@@ -50,6 +53,14 @@ export class ShiftworkerExportService {
       console.log(
         `${shifttype.description}: ${shifttype.start} - ${shifttype.end}`
       );
+    });
+    console.log("\n");
+  }
+
+  private printShifts(shifts: Shift[]) {
+    console.log(`\n🙆‍♀️ Extracted in total ${shifts.length} shifts`);
+    shifts.forEach((shift) => {
+      console.log(`${shift.summary}: ${shift.start} - ${shift.end}`);
     });
     console.log("\n");
   }
