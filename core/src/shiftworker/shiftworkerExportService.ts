@@ -11,12 +11,17 @@ dayjs.extend(timezone);
 
 export class ShiftworkerExportService {
   private repository: ShiftworkerRepository;
-  constructor(repository: ShiftworkerRepository) {
+  private config: Config;
+  constructor(repository: ShiftworkerRepository, config: Config) {
     this.repository = repository;
+    this.config = config;
   }
   async exportShifts(): Promise<Shift[]> {
     const shifts = await this.repository.getShifts();
     const shifttypes = await this.repository.getShifttypes();
+    if (this.config.debug) {
+      this.printShifttypes(shifttypes);
+    }
     return this.mapShifts(shifts, shifttypes).filter((shift) =>
       isAfterYesterday(shift.start.toDate())
     );
@@ -37,6 +42,16 @@ export class ShiftworkerExportService {
         summary: shifttype?.description || "Ukjent vakt",
       };
     });
+  }
+
+  private printShifttypes(shifttypes: ShifttypeDB[]) {
+    console.log(`\n🫡 Printing ${shifttypes.length} shifttypes`);
+    shifttypes.forEach((shifttype) => {
+      console.log(
+        `${shifttype.description}: ${shifttype.start} - ${shifttype.end}`
+      );
+    });
+    console.log("\n");
   }
 }
 
@@ -65,4 +80,8 @@ export interface Shift {
   start: Dayjs;
   end: Dayjs;
   summary: string;
+}
+
+interface Config {
+  debug: boolean;
 }

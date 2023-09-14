@@ -14,7 +14,7 @@ export const exportShiftworkerFileToIcal = async (
   options: ExportShiftworkerFileToIcalOptions
 ): Promise<string> => {
   const repository = await initializeShiftworkerDbRepository(filepath);
-  const service = new ShiftworkerExportService(repository);
+  const service = new ShiftworkerExportService(repository, { debug: false });
   return service.exportShifts().then((shifts) => {
     const configValidationResult = mapToValidConfig(options);
     if (configValidationResult.ok) {

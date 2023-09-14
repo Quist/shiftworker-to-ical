@@ -5,7 +5,6 @@ export class ArgumentParser {
     if (process.argv.length <= 2) {
       throw new Error("Missing required parameter: inputFilePath.");
     }
-    console.log(process.argv);
     const inputFilePath = process.argv[2];
     if (!ArgumentParser.fileExist(inputFilePath)) {
       throw new Error(

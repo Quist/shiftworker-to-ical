@@ -13,7 +13,7 @@ export const initializeShiftworkerDbRepository = (
           reject(`Error initializing ShiftworkerDbRepository: ${err}`);
         } else {
           console.log(
-            `ShiftworkerDbRepository successfully initialized with file ${inputFilename}`
+            `💚 ShiftworkerDbRepository successfully initialized with file ${inputFilename}`
           );
           res(new ShiftworkerDbRepository(db));
         }
