@@ -4,7 +4,7 @@ Welcome to the Shiftworker to Google Calendar Exporter project! This monorepo pr
 
 1. **Core Module**: This module contains the logic and an npm package for exporting events. It serves as the foundation of the entire project, handling the core functionality required for the export process. It also provides a command-line tool.
 
-2. **shiftworker-web**: Source code of the web page [https://shiftworkerexport.com/](https://shiftworkerexport.com/)
+2. **shiftworker-web**: Source code of the web page [https://shiftworkerexport.com/](https://shiftworkerexport.com/), hosted on Netlify
 
 3. **shiftworker-backend**: The backend module complements the web frontend.
 
