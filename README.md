@@ -1,12 +1,14 @@
 # Shiftworker to Google Calendar Exporter
 
-Welcome to the Shiftworker to Google Calendar Exporter project! This monorepo provides tools to seamlessly export calendar events from the Shiftworker app to Google Calendar. The repository is organized into three main modules:
+Export shift schedules from the Shiftworker mobile app to iCal format for Google Calendar import.
+
+This monorepo provides tools to seamlessly export calendar events from the Shiftworker app to Google Calendar. The repository is organized into three main modules:
 
 1. **Core Module**: This module contains the logic and an npm package for exporting events. It serves as the foundation of the entire project, handling the core functionality required for the export process. It also provides a command-line tool.
 
 2. **shiftworker-web**: Source code of the web page [https://shiftworkerexport.com/](https://shiftworkerexport.com/), hosted on Netlify
 
-3. **shiftworker-backend**: The backend module complements the web frontend.
+3. **shiftworker-backend**: Backend service (Google Cloud Function) that processes file uploads and generates iCal files.
 
 ## Getting Started
 
