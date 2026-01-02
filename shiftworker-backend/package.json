@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "deploy": "npm run build && gcloud functions deploy shiftworkerHttp --runtime nodejs18 --trigger-http --allow-unauthenticated",
+    "deploy": "npm run build && gcloud functions deploy shiftworkerHttp --runtime nodejs20 --trigger-http --allow-unauthenticated",
     "build": "tsc"
   },
   "devDependencies": {
