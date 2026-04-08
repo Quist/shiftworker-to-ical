@@ -4,7 +4,6 @@ import { GCloudFileService } from "./src/fileService";
 
 const functions = require("@google-cloud/functions-framework");
 
-const ALLOWED_ORIGIN = "https://shiftworkerexport.com";
 const MAX_BODY_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 // Simple in-memory rate limiter: max 10 requests per IP per minute.
@@ -33,7 +32,7 @@ function isRateLimited(ip: string): boolean {
  * @param {Object} res Cloud Function response context.
  */
 functions.http("shiftworkerHttp", (req: Request, res: Response) => {
-  res.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+  res.set("Access-Control-Allow-Origin", "*");
 
   if (req.method === "OPTIONS") {
     res.set("Access-Control-Allow-Methods", "POST");
