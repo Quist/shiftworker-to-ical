@@ -2,17 +2,19 @@ import fs from "fs";
 import crypto from "crypto";
 const { Storage } = require("@google-cloud/storage");
 
+const bucketName = process.env.GCS_BUCKET_NAME;
+if (!bucketName) {
+  throw new Error("Missing required environment variable: GCS_BUCKET_NAME");
+}
+
 export class GCloudFileService implements FileService {
   async writeToStorage(icalAsString: string): Promise<string> {
     const storage = new Storage();
     const id = crypto.randomBytes(16).toString("hex");
     const filePath = `${id}.ical`;
-    await storage
-      .bucket("shiftworker-to-ical-generated-output")
-      .file(filePath)
-      .save(icalAsString);
+    await storage.bucket(bucketName).file(filePath).save(icalAsString);
 
-    return `https://storage.googleapis.com/shiftworker-to-ical-generated-output/${filePath}`;
+    return `https://storage.googleapis.com/${bucketName}/${filePath}`;
   }
 
   writeToTmpFile(input: any): Promise<string> {
