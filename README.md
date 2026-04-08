@@ -1,8 +1,8 @@
-# Shiftworker to Google Calendar Exporter
+# Shiftworker iCal Exporter
 
-Export shift schedules from the Shiftworker mobile app to iCal format for Google Calendar import.
+Export shift schedules from the Shiftworker mobile app to iCal format — compatible with Google Calendar, Apple Calendar, Proton Calendar, and any iCal-compatible app.
 
-This monorepo provides tools to seamlessly export calendar events from the Shiftworker app to Google Calendar. The repository is organized into two main modules:
+This monorepo provides tools to seamlessly export calendar events from the Shiftworker app. The repository is organized into two main modules:
 
 1. **shiftworker-backend**: Backend service (Google Cloud Function) that processes file uploads and generates iCal files.
 
