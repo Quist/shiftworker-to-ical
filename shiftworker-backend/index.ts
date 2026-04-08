@@ -4,6 +4,27 @@ import { GCloudFileService } from "./src/fileService";
 
 const functions = require("@google-cloud/functions-framework");
 
+const ALLOWED_ORIGIN = "https://shiftworkerexport.com";
+const MAX_BODY_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+// Simple in-memory rate limiter: max 10 requests per IP per minute.
+// Note: resets per function instance — use Cloud Armor for stricter enforcement.
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  if (entry.count >= RATE_LIMIT) return true;
+  entry.count++;
+  return false;
+}
+
 /**
  * Responds to an HTTP request using data from the request body parsed according
  * to the "content-type" header.
@@ -12,15 +33,19 @@ const functions = require("@google-cloud/functions-framework");
  * @param {Object} res Cloud Function response context.
  */
 functions.http("shiftworkerHttp", (req: Request, res: Response) => {
-  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
 
   if (req.method === "OPTIONS") {
-    // Send response to OPTIONS requests
-    res.set("Access-Control-Allow-Methods", "GET");
+    res.set("Access-Control-Allow-Methods", "POST");
     res.set("Access-Control-Allow-Headers", "Content-Type");
     res.set("Access-Control-Max-Age", "3600");
     res.status(204).send("");
   } else if (req.method === "POST") {
+    const ip = req.ip ?? "unknown";
+    if (isRateLimited(ip)) {
+      res.status(429).send("Too many requests. Please try again later.");
+      return;
+    }
     handlePost(req)
       .then((response) => {
         res.send(response);
@@ -37,8 +62,6 @@ functions.http("shiftworkerHttp", (req: Request, res: Response) => {
     res.send("Hello World!");
   }
 });
-
-const MAX_BODY_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 async function handlePost(req: Request): Promise<string> {
   const bodySize = Buffer.byteLength(req.body);
