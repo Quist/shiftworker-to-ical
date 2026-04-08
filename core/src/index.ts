@@ -14,7 +14,10 @@ export const exportShiftworkerFileToIcal = async (
   options: ExportShiftworkerFileToIcalOptions
 ): Promise<string> => {
   const repository = await initializeShiftworkerDbRepository(filepath);
-  const service = new ShiftworkerExportService(repository, { debug: false });
+  const service = new ShiftworkerExportService(repository, {
+    debug: false,
+    timezone: options.timezone
+  });
   return service.exportShifts().then((shifts) => {
     const configValidationResult = mapToValidConfig(options);
     if (configValidationResult.ok) {
@@ -29,11 +32,15 @@ const mapToValidConfig = (
 ): Result<ToIcalConfig, string> => {
   const result = ValidTimeZone.create(config.timezone);
   if (result.ok) {
-    return success({ timezone: result.value });
+    return success({
+      timezone: result.value,
+      prefix: config.prefix
+    });
   }
   return failure(result.error);
 };
 
 interface ExportShiftworkerFileToIcalOptions {
   timezone: string;
+  prefix?: string;
 }

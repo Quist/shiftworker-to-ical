@@ -10,8 +10,11 @@ import {
   Box,
   Button,
   FormControl,
+  FormLabel,
   Heading,
+  Input,
   Stack,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { LearnMoreModal } from "./LearnMoreModal";
@@ -24,6 +27,7 @@ export const UploadFilePage = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown | null>(null);
+  const [prefix, setPrefix] = useState<string>("");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onFileSelected = (files: FileList) => {
@@ -33,7 +37,7 @@ export const UploadFilePage = ({
     reader.onload = async (e) => {
       const text = e.target?.result;
       try {
-        const result = await postToBackend(text as string);
+        const result = await postToBackend(text as string, prefix);
         onSuccess({ url: result });
       } catch (e) {
         setError(e);
@@ -73,7 +77,7 @@ export const UploadFilePage = ({
                 </AccordionButton>
               </h2>
               <AccordionPanel pb={4}>
-                <Advanced isOpen={true} />
+                <Advanced isOpen={true} prefix={prefix} setPrefix={setPrefix} />
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
@@ -123,14 +127,39 @@ const FileInput = (props: {
   );
 };
 
-const Advanced = ({ isOpen }: { isOpen: boolean }) => {
+const Advanced = ({
+  isOpen,
+  prefix,
+  setPrefix,
+}: {
+  isOpen: boolean;
+  prefix: string;
+  setPrefix: (value: string) => void;
+}) => {
   if (!isOpen) {
     return null;
   }
   return (
-    <>
-      <Heading size={"xs"}>Timezone</Heading>
-      <p>{Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
-    </>
+    <Stack spacing={3}>
+      <Box>
+        <Heading size={"xs"} mb={1}>Timezone</Heading>
+        <Text fontSize={"sm"}>{Intl.DateTimeFormat().resolvedOptions().timeZone}</Text>
+      </Box>
+      <FormControl>
+        <FormLabel htmlFor="prefix" fontSize={"xs"}>
+          Name prefix (optional)
+        </FormLabel>
+        <Input
+          id="prefix"
+          size="sm"
+          placeholder="e.g. Your Name"
+          value={prefix}
+          onChange={(e) => setPrefix(e.target.value)}
+        />
+        <Text fontSize={"xs"} color={"gray.500"} mt={1}>
+          Will be added to the beginning of each shift (e.g. "John: Evening shift")
+        </Text>
+      </FormControl>
+    </Stack>
   );
 };

@@ -38,7 +38,7 @@ export class ShiftworkerExportService {
       if (!shifttype) {
         throw new Error(`Could not find shifttype for ${shift.shifttype}`);
       }
-      const { start, end } = parseDates(shift, shifttype);
+      const { start, end } = parseDates(shift, shifttype, this.config.timezone);
       return {
         start: start,
         end: end,
@@ -66,9 +66,9 @@ export class ShiftworkerExportService {
   }
 }
 
-const parseDates = (shift: ShiftDB, shifttype: ShifttypeDB) => {
-  const shiftStart = parseDate(shift.date, shifttype.start);
-  const shiftEnd = parseDate(shift.date, shifttype.end);
+const parseDates = (shift: ShiftDB, shifttype: ShifttypeDB, timezone: string) => {
+  const shiftStart = parseDate(shift.date, shifttype.start, timezone);
+  const shiftEnd = parseDate(shift.date, shifttype.end, timezone);
   if (shiftEnd.isBefore(shiftStart)) {
     return {
       start: shiftStart,
@@ -82,9 +82,9 @@ const parseDates = (shift: ShiftDB, shifttype: ShifttypeDB) => {
   };
 };
 
-const parseDate = (shiftDateRaw: string, shifttypeStart: string) => {
+const parseDate = (shiftDateRaw: string, shifttypeStart: string, timezone: string) => {
   const rawString = `${shiftDateRaw.split(" ")[0]} ${shifttypeStart}`;
-  return dayjs.tz(rawString, "MM-DD-YYYY HH:mm:ss", "Europe/Oslo");
+  return dayjs.tz(rawString, "MM-DD-YYYY HH:mm:ss", timezone);
 };
 
 export interface Shift {
@@ -95,4 +95,5 @@ export interface Shift {
 
 interface Config {
   debug: boolean;
+  timezone: string;
 }

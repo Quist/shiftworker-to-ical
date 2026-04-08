@@ -1,9 +1,14 @@
-export const postToBackend = async (payload: string): Promise<string> => {
+export const postToBackend = async (payload: string, prefix?: string): Promise<string> => {
+  const params: Record<string, string> = {
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  };
+  if (prefix && prefix.trim() !== "") {
+    params.prefix = prefix.trim() + ": ";
+  }
+
   const response = await fetch(
     "https://us-central1-shiftworker-387320.cloudfunctions.net/shiftworkerHttp?" +
-      new URLSearchParams({
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }),
+      new URLSearchParams(params),
     {
       method: "post",
       body: payload,

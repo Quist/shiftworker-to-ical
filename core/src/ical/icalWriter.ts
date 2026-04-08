@@ -30,7 +30,7 @@ export const convertToVEvent = (shift: Shift, config: ToIcalConfig) => {
 DTSTAMP:${dayjs().format("YYYYMMDDTHHmmss")}Z
 DTSTART;TZID=${config.timezone}:${shift.start.format("YYYYMMDDTHHmmss")}
 DTEND;TZID=${config.timezone}:${shift.end.format("YYYYMMDDTHHmmss")}
-UID:${uuidv4()}@quister.org
+UID:${uuidv4()}@shiftworker-export.local
 SUMMARY:${summary}
 END:VEVENT
 `;

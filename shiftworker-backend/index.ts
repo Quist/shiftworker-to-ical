@@ -37,7 +37,11 @@ functions.http("shiftworkerHttp", (req: Request, res: Response) => {
 async function handlePost(req: Request): Promise<string> {
   const service = new ShiftworkerToIcalService(new GCloudFileService());
   const timezone = extractTimezoneFromUrlQuery(req);
-  return await service.convert(req.body, { timezone: timezone });
+  const prefix = extractPrefixFromUrlQuery(req);
+  return await service.convert(req.body, {
+    timezone: timezone,
+    prefix: prefix
+  });
 }
 
 const extractTimezoneFromUrlQuery = (req: Request): string => {
@@ -46,4 +50,9 @@ const extractTimezoneFromUrlQuery = (req: Request): string => {
     throw Error("Timezone not present in url query");
   }
   return <string>timezone;
+};
+
+const extractPrefixFromUrlQuery = (req: Request): string | undefined => {
+  const prefix = req.query.prefix;
+  return prefix ? <string>prefix : undefined;
 };
