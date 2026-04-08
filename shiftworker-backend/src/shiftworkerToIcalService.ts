@@ -1,4 +1,4 @@
-import { exportShiftworkerFileToIcal } from "shiftworker-to-ical";
+import { exportShiftworkerFileToIcal } from "./core/index";
 import { FileService } from "./fileService";
 
 export class ShiftworkerToIcalService {
