@@ -1,4 +1,4 @@
-import { exportShiftworkerFileToIcal } from "shiftworker-to-ical";
+import { exportShiftworkerFileToIcal } from "./exportShiftworkerFileToIcal";
 import { FileService } from "./fileService";
 
 export class ShiftworkerToIcalService {
@@ -10,11 +10,12 @@ export class ShiftworkerToIcalService {
 
   public async convert(
     inputData: any,
-    options: { timezone: string }
+    options: { timezone: string; prefix?: string }
   ): Promise<string> {
     const filepath = await this.fileService.writeToTmpFile(inputData);
     const icalAsString = await exportShiftworkerFileToIcal(filepath, {
       timezone: options.timezone,
+      prefix: options.prefix,
     });
     const outfile = await this.fileService.writeToStorage(icalAsString);
     console.log(
