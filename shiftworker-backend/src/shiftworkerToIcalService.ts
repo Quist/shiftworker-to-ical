@@ -1,3 +1,4 @@
+import fs from "fs";
 import { exportShiftworkerFileToIcal } from "./core/index";
 import { FileService } from "./fileService";
 
@@ -13,13 +14,19 @@ export class ShiftworkerToIcalService {
     options: { timezone: string }
   ): Promise<string> {
     const filepath = await this.fileService.writeToTmpFile(inputData);
-    const icalAsString = await exportShiftworkerFileToIcal(filepath, {
-      timezone: options.timezone,
-    });
-    const outfile = await this.fileService.writeToStorage(icalAsString);
-    console.log(
-      `✅ ShiftworkerToIcalService successfully completed and written output to '${outfile}'`
-    );
-    return outfile;
+    try {
+      const icalAsString = await exportShiftworkerFileToIcal(filepath, {
+        timezone: options.timezone,
+      });
+      const outfile = await this.fileService.writeToStorage(icalAsString);
+      console.log(
+        `✅ ShiftworkerToIcalService successfully completed and written output to '${outfile}'`
+      );
+      return outfile;
+    } finally {
+      fs.unlink(filepath, (err) => {
+        if (err) console.error(`Failed to delete tmp file ${filepath}:`, err);
+      });
+    }
   }
 }
