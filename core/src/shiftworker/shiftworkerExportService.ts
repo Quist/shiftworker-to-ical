@@ -84,7 +84,7 @@ const parseDates = (shift: ShiftDB, shifttype: ShifttypeDB) => {
 
 const parseDate = (shiftDateRaw: string, shifttypeStart: string) => {
   const rawString = `${shiftDateRaw.split(" ")[0]} ${shifttypeStart}`;
-  return dayjs(rawString, "MM-DD-YYYY HH:mm:ss ").tz("EUROPE/BERLIN");
+  return dayjs.tz(rawString, "MM-DD-YYYY HH:mm:ss", "Europe/Oslo");
 };
 
 export interface Shift {
