@@ -22,7 +22,7 @@ export const App = () => {
           >
             Seamlessly export your Shiftworker schedules to <br />
             <Text as={"span"} color={"green.400"}>
-              Google Calendar
+              your calendar
             </Text>{" "}
             <br />
           </Heading>

@@ -48,6 +48,7 @@ export const FileSuccessfullyUploaded = ({
         >
           Google Calendar
         </Link>
+        {", "}Apple Calendar, Proton Calendar, or any iCal-compatible app.
       </Text>
       <Button marginTop={12} onClick={onReset}>
         Upload another

@@ -57,9 +57,12 @@ export const LearnMoreModal = ({
             </Stack>
             <Stack marginBottom={3}>
               <Heading size={"sm"}>
-                🎉 Step 6: Export to Google Calendar🎉
+                🎉 Step 6: Add to your calendar 🎉
               </Heading>
-              <Text>Follow the instructions to sync to Google Calendar!</Text>
+              <Text>
+                Copy the URL and add it to Google Calendar, Apple Calendar,
+                Proton Calendar, or any iCal-compatible app.
+              </Text>
             </Stack>
           </Stack>
         </ModalBody>
