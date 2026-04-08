@@ -27,17 +27,33 @@ functions.http("shiftworkerHttp", (req: Request, res: Response) => {
       })
       .catch((e) => {
         console.error(e);
-        res.status(500).send("Error");
+        if (e instanceof FileTooLargeError) {
+          res.status(413).send("File too large. Maximum size is 10 MB.");
+        } else {
+          res.status(500).send("Error");
+        }
       });
   } else {
     res.send("Hello World!");
   }
 });
 
+const MAX_BODY_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+
 async function handlePost(req: Request): Promise<string> {
+  const bodySize = Buffer.byteLength(req.body);
+  if (bodySize > MAX_BODY_SIZE_BYTES) {
+    throw new FileTooLargeError(bodySize);
+  }
   const service = new ShiftworkerToIcalService(new GCloudFileService());
   const timezone = extractTimezoneFromUrlQuery(req);
   return await service.convert(req.body, { timezone: timezone });
+}
+
+class FileTooLargeError extends Error {
+  constructor(bytes: number) {
+    super(`File too large: ${bytes} bytes (max ${MAX_BODY_SIZE_BYTES})`);
+  }
 }
 
 const extractTimezoneFromUrlQuery = (req: Request): string => {
