@@ -52,6 +52,9 @@ class ShiftworkerDbRepository implements ShiftworkerRepository {
       this.db.all(
         "SELECT * FROM shifttype",
         (err: string, rows: ShifttypeDB[]) => {
+          if (err) {
+            reject(`Error reading shifttypes from shifttype table: ${err}`);
+          }
           res(rows);
         }
       );
