@@ -1,6 +1,8 @@
 {
+  "name": "shiftworker-backend",
+  "main": "dist/index.js",
   "scripts": {
-    "deploy": "npm run build && gcloud functions deploy shiftworkerHttp --runtime nodejs22 --trigger-http --allow-unauthenticated",
+    "deploy": "npm run build && gcloud functions deploy shiftworkerHttp --runtime nodejs22 --trigger-http --allow-unauthenticated --set-env-vars GCS_BUCKET_NAME=shiftworker-to-ical-generated-output",
     "build": "tsc",
     "test": "jest"
   },

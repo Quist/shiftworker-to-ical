@@ -1,3 +1,5 @@
 node_modules
 .idea
 out.*
+shiftworker-backend/dist/
+shiftworker-backend/src/**/*.js
