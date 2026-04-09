@@ -4,15 +4,15 @@ const { Storage } = require("@google-cloud/storage");
 
 export class GCloudFileService implements FileService {
   async writeToStorage(icalAsString: string): Promise<string> {
+    const bucketName = process.env.GCS_BUCKET_NAME;
+    if (!bucketName) {
+      throw new Error("GCS_BUCKET_NAME environment variable is not set");
+    }
     const storage = new Storage();
     const id = crypto.randomBytes(16).toString("hex");
     const filePath = `${id}.ical`;
-    await storage
-      .bucket("shiftworker-to-ical-generated-output")
-      .file(filePath)
-      .save(icalAsString);
-
-    return `https://storage.googleapis.com/shiftworker-to-ical-generated-output/${filePath}`;
+    await storage.bucket(bucketName).file(filePath).save(icalAsString);
+    return `https://storage.googleapis.com/${bucketName}/${filePath}`;
   }
 
   writeToTmpFile(input: any): Promise<string> {

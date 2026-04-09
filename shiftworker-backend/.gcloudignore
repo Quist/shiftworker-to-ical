@@ -12,3 +12,5 @@
 # below:
 .git
 .gitignore
+src/
+tsconfig.json
