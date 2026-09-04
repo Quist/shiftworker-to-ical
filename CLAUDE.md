@@ -22,7 +22,7 @@ Backend (`cd shiftworker-backend`):
 npm test            # jest (ts-jest), matches **/*.test.ts
 npm run build       # tsc — test files are excluded from the build
 npm run deploy      # build + gcloud functions deploy (requires gcloud auth)
-npx ts-node src/localClient.ts <path-to-db-dump>   # run the conversion locally
+npx ts-node src/localClient.ts <path-to-db-dump> [calendar-name]   # run locally
 ```
 
 Frontend (`cd shiftworker-web`):
@@ -64,6 +64,9 @@ layer.
 - Timezone comes from the client (`?timezone=` query param, resolved via
   `Intl.DateTimeFormat().resolvedOptions().timeZone`) and is validated by
   `ValidTimeZone` — never hardcode a zone.
+- The optional `?calendarName=` query param sets `NAME`/`X-WR-CALNAME` in the
+  iCal output and the file name part of the generated URL; it is sanitized by
+  `sanitizeCalendarName` and defaults to `Shiftworker`.
 - Backend logs are single-line JSON with a `severity` and `requestId`; use the
   existing `log()` helper rather than bare `console.log` in the handler.
 - Prefer adding unit tests next to the code (`*.test.ts`) for anything in

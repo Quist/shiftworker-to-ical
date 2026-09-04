@@ -2,6 +2,7 @@ import { Request, Response } from "@google-cloud/functions-framework";
 import { randomUUID } from "crypto";
 import { ShiftworkerToIcalService } from "./src/shiftworkerToIcalService";
 import { GCloudFileService } from "./src/fileService";
+import { sanitizeCalendarName } from "./src/core/ical/icalWriter";
 
 const functions = require("@google-cloud/functions-framework");
 
@@ -88,7 +89,8 @@ async function handlePost(req: Request): Promise<string> {
   }
   const service = new ShiftworkerToIcalService(new GCloudFileService());
   const timezone = extractTimezoneFromUrlQuery(req);
-  return await service.convert(req.body, { timezone });
+  const calendarName = extractCalendarNameFromUrlQuery(req);
+  return await service.convert(req.body, { timezone, calendarName });
 }
 
 class FileTooLargeError extends Error {
@@ -109,4 +111,12 @@ const extractTimezoneFromUrlQuery = (req: Request): string => {
     throw new TimezoneError("Missing required query parameter: timezone");
   }
   return <string>timezone;
+};
+
+const extractCalendarNameFromUrlQuery = (req: Request): string | undefined => {
+  const calendarName = req.query.calendarName;
+  if (typeof calendarName !== "string") {
+    return undefined;
+  }
+  return sanitizeCalendarName(calendarName);
 };

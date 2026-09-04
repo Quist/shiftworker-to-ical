@@ -29,11 +29,15 @@ const mapToValidConfig = (
 ): Result<ToIcalConfig, string> => {
   const result = ValidTimeZone.create(config.timezone);
   if (result.ok) {
-    return success({ timezone: result.value });
+    return success({
+      timezone: result.value,
+      calendarName: config.calendarName,
+    });
   }
   return failure(result.error);
 };
 
 interface ExportShiftworkerFileToIcalOptions {
   timezone: string;
+  calendarName?: string;
 }

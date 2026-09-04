@@ -10,11 +10,19 @@ the public URL to the frontend.
 npm install
 npm test                                           # jest
 npm run build                                      # tsc
-npx ts-node src/localClient.ts <path-to-db-dump>    # convert a dump locally
+npx ts-node src/localClient.ts <path-to-db-dump> [calendar-name]   # convert a dump locally
 ```
 
-The local client writes its scratch and output files (`tmp.txt`, `out.tmp`) to
-the working directory; both are git-ignored.
+The local client writes its scratch file (`tmp.txt`) and the generated calendar
+(`<calendar-name>.ical`, defaults to `shiftworker.ical`) to the working
+directory; both are git-ignored.
+
+## Query parameters
+
+| Parameter      | Required | Description                                                                 |
+| -------------- | -------- | --------------------------------------------------------------------------- |
+| `timezone`     | yes      | IANA timezone the shift times are interpreted in, e.g. `Europe/Oslo`.        |
+| `calendarName` | no       | Name calendar apps show for the calendar. Defaults to `Shiftworker`.         |
 
 ## Deploy
 
