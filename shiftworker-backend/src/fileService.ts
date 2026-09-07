@@ -2,15 +2,41 @@ import fs from "fs";
 import crypto from "crypto";
 const { Storage } = require("@google-cloud/storage");
 
+const DEFAULT_FILE_NAME = "shiftworker";
+const MAX_FILE_NAME_LENGTH = 40;
+
+/**
+ * Turns a calendar name into a safe, readable file name. The name only affects
+ * the last part of the URL — uniqueness still comes from the random id prefix.
+ */
+export const toFileName = (calendarName?: string): string => {
+  const slug = (calendarName ?? "")
+    .toLowerCase()
+    .replace(/ø/g, "o")
+    .replace(/æ/g, "ae")
+    .replace(/å/g, "a")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, MAX_FILE_NAME_LENGTH)
+    .replace(/-+$/g, "");
+  return slug.length > 0 ? slug : DEFAULT_FILE_NAME;
+};
+
 export class GCloudFileService implements FileService {
-  async writeToStorage(icalAsString: string): Promise<string> {
+  async writeToStorage(
+    icalAsString: string,
+    options?: WriteToStorageOptions
+  ): Promise<string> {
     const storage = new Storage();
     const id = crypto.randomBytes(16).toString("hex");
-    const filePath = `${id}.ical`;
+    const filePath = `${id}/${toFileName(options?.calendarName)}.ical`;
     await storage
       .bucket("shiftworker-to-ical-generated-output")
       .file(filePath)
-      .save(icalAsString);
+      .save(icalAsString, { contentType: "text/calendar; charset=utf-8" });
 
     return `https://storage.googleapis.com/shiftworker-to-ical-generated-output/${filePath}`;
   }
@@ -42,8 +68,14 @@ export class LocalFileService implements FileService {
     return this.writeToFile(input, filePath);
   }
 
-  writeToStorage(icalAsString: string): Promise<string> {
-    return this.writeToFile(icalAsString, "out.tmp");
+  writeToStorage(
+    icalAsString: string,
+    options?: WriteToStorageOptions
+  ): Promise<string> {
+    return this.writeToFile(
+      icalAsString,
+      `${toFileName(options?.calendarName)}.ical`
+    );
   }
 
   private writeToFile(input: any, filepath: string): Promise<string> {
@@ -63,5 +95,12 @@ export class LocalFileService implements FileService {
 
 export interface FileService {
   writeToTmpFile: (input: any) => Promise<string>;
-  writeToStorage: (icalAsString: string) => Promise<string>;
+  writeToStorage: (
+    icalAsString: string,
+    options?: WriteToStorageOptions
+  ) => Promise<string>;
+}
+
+export interface WriteToStorageOptions {
+  calendarName?: string;
 }

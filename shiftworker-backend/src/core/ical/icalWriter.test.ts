@@ -2,6 +2,8 @@ import dayjs from "dayjs";
 import {
   convertToIcal,
   convertToVEvent,
+  DEFAULT_CALENDAR_NAME,
+  sanitizeCalendarName,
   ToIcalConfig,
   ValidTimeZone,
 } from "./icalWriter";
@@ -67,6 +69,36 @@ describe("Følger ICAL spesifikasjon", () => {
       expect(convertToIcal(getDefaultInput(), defaultConfig())).toContain(
         "END:VEVENT"
       );
+    });
+
+    test("inkluderer kalendernavn slik at klienter viser noe annet enn urlen", () => {
+      const result = convertToIcal(getDefaultInput(), {
+        ...defaultConfig(),
+        calendarName: "Ingrids vakter",
+      });
+      expect(result).toContain("NAME:Ingrids vakter\n");
+      expect(result).toContain("X-WR-CALNAME:Ingrids vakter\n");
+    });
+
+    test("bruker standardnavn når kalendernavn mangler", () => {
+      const result = convertToIcal(getDefaultInput(), defaultConfig());
+      expect(result).toContain(`X-WR-CALNAME:${DEFAULT_CALENDAR_NAME}\n`);
+    });
+
+    test("bruker standardnavn når kalendernavn er tomt", () => {
+      const result = convertToIcal(getDefaultInput(), {
+        ...defaultConfig(),
+        calendarName: "   ",
+      });
+      expect(result).toContain(`X-WR-CALNAME:${DEFAULT_CALENDAR_NAME}\n`);
+    });
+
+    test("escaper spesialtegn i kalendernavnet", () => {
+      const result = convertToIcal(getDefaultInput(), {
+        ...defaultConfig(),
+        calendarName: "Vakter; kveld, natt",
+      });
+      expect(result).toContain("X-WR-CALNAME:Vakter\\; kveld\\, natt\n");
     });
 
     test("har ingen tomme linjer", () => {
@@ -143,6 +175,25 @@ describe("Følger ICAL spesifikasjon", () => {
         expect(summary).toEqual(`Ingrid: ${input[0].summary}`);
       });
     });
+  });
+});
+
+describe("sanitizeCalendarName", () => {
+  test("fjerner linjeskift og kontrolltegn", () => {
+    expect(sanitizeCalendarName("Mine\nvakter")).toEqual("Mine vakter");
+  });
+
+  test("trimmer og kollapser mellomrom", () => {
+    expect(sanitizeCalendarName("  Mine   vakter  ")).toEqual("Mine vakter");
+  });
+
+  test("kutter navn som er for langt", () => {
+    expect(sanitizeCalendarName("a".repeat(100))).toHaveLength(60);
+  });
+
+  test("returnerer undefined for tomt navn", () => {
+    expect(sanitizeCalendarName("   ")).toBeUndefined();
+    expect(sanitizeCalendarName(undefined)).toBeUndefined();
   });
 });
 

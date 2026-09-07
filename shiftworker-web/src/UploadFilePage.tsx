@@ -10,12 +10,18 @@ import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
+  FormLabel,
   Heading,
+  Input,
   Stack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { LearnMoreModal } from "./LearnMoreModal";
 import { postToBackend } from "./api";
+
+const DEFAULT_CALENDAR_NAME = "Shiftworker";
+const MAX_CALENDAR_NAME_LENGTH = 60;
 
 export const UploadFilePage = ({
   onSuccess,
@@ -24,6 +30,7 @@ export const UploadFilePage = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown | null>(null);
+  const [calendarName, setCalendarName] = useState(DEFAULT_CALENDAR_NAME);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onFileSelected = (files: FileList) => {
@@ -33,7 +40,7 @@ export const UploadFilePage = ({
     reader.onload = async (e) => {
       const text = e.target?.result;
       try {
-        const result = await postToBackend(text as string);
+        const result = await postToBackend(text as string, calendarName);
         onSuccess({ url: result });
       } catch (e) {
         setError(e);
@@ -73,7 +80,10 @@ export const UploadFilePage = ({
                 </AccordionButton>
               </h2>
               <AccordionPanel pb={4}>
-                <Advanced isOpen={true} />
+                <Advanced
+                  calendarName={calendarName}
+                  onCalendarNameChange={setCalendarName}
+                />
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
@@ -123,14 +133,34 @@ const FileInput = (props: {
   );
 };
 
-const Advanced = ({ isOpen }: { isOpen: boolean }) => {
-  if (!isOpen) {
-    return null;
-  }
+const Advanced = ({
+  calendarName,
+  onCalendarNameChange,
+}: {
+  calendarName: string;
+  onCalendarNameChange: (calendarName: string) => void;
+}) => {
   return (
-    <>
-      <Heading size={"xs"}>Timezone</Heading>
-      <p>{Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
-    </>
+    <Stack spacing={4}>
+      <FormControl>
+        <FormLabel fontSize={"sm"} marginBottom={1}>
+          <Heading size={"xs"}>Calendar name</Heading>
+        </FormLabel>
+        <Input
+          size={"sm"}
+          value={calendarName}
+          maxLength={MAX_CALENDAR_NAME_LENGTH}
+          placeholder={DEFAULT_CALENDAR_NAME}
+          onChange={(e) => onCalendarNameChange(e.target.value)}
+        />
+        <FormHelperText fontSize={"xs"}>
+          The name your calendar app shows for the imported calendar.
+        </FormHelperText>
+      </FormControl>
+      <Box>
+        <Heading size={"xs"}>Timezone</Heading>
+        <p>{Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+      </Box>
+    </Stack>
   );
 };
